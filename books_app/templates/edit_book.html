@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Favorite Books</title>
+</head>
+<body>
+    <h1>Welcome, Pickle</h1>
+    <p>Edit review below</p>
+    <br>
+    {% if messages %}
+    <ul>    
+        {% for message in messages %}    
+            <li style="color: red;">{{ message }}</li>    
+        {% endfor %}
+    </ul>
+    {% endif %}
+    <form action="/book/update/{{oneBook.id}}" method="post">
+    {% csrf_token %}
+    <p>Edit Title: <input type="text" name="title" id="" value="{{oneBook.title}}"></p>
+    <p>Added by: {{oneBook.uploaded_by.first_name}} {{oneBook.uploaded_by.last_name}}</p>
+    <p>Added on: {{oneBook.created_at}}</p>
+    <p>Last updated on: {{oneBook.updated_at}}</p>
+    <p>Edit Description: </p>
+    <textarea name="desc" id="" cols="30" rows="10">{{oneBook.desc}}</textarea>
+    <br>
+    <input type="submit" value="Update">
+    </form>
+    <h1>Users Who Like This Book:</h1>
+    <ul>
+        {% for user in oneBook.users_who_like.all %}
+        <li>{{user.first_name}} {{user.last_name}}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Favorite Books</title>
+</head>
+<body>
+    <h1>Welcome back, {{loggedInId}}</h1>
+    <h1>Add a Favorite Book</h1>
+    {% if messages %}
+    <ul>    
+        {% for message in messages %}    
+            <li style="color: red;">{{ message }}</li>    
+        {% endfor %}
+    </ul>
+    {% endif %}
+    <form action="/create/book" method="post">
+    {% csrf_token %}
+    <p>Title: <input type="text" name="title" id=""></p>
+    <p>Description: </p>
+    <textarea name="desc" id="" cols="30" rows="10"></textarea>
+    <br>
+    <input type="submit" value="Add">
+    </form>
+    <table>
+        <thead>
+            <th>Title</th>
+            <th>Description</th>
+            <th>Added by</th>
+            <th>Actions</th>
+        </thead>
+        <tbody>
+            {% for book in allBooks%}
+            <tr>
+                <td>{{book.title}}</td>
+                <td>{{book.desc}}</td>
+                <td>{{book.uploaded_by.first_name}} {{book.uploaded_by.last_name}}</td>
+                <td><a href="/book/{{book.id}}">View  </a>|{% if loggedInId == book.uploaded_by %}<a href="/book/edit/{{book.id}}">Edit  </a>|<a href="/book/delete/{{book.id}}">  Delete</a></td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <h1>All Books</h1>
+    {% for like in favorite %}
+        {% for liked in like.users_who_like.all %}
+        {% if request.session.loggedInId == liked.id %}
+        <p>{{like.id}} {{like.title}} {{liked.id}} {{liked.first_name}} <em>this is one of your favorites!</em></p>
+        {% endif %}
+        {% endfor %}
+    {% endfor %}
+
+    {% for book in allBooks%}
+    <div>
+        <!-- <p>{{book.users_who_like.all}}</p> -->
+        <h1><a href="/book/{{book.id}}">{{book.title}}</a></h1>
+        <p>(added by {{book.uploaded_by.first_name}} {{book.uploaded_by.last_name}})</p>
+            {% for person in book.users_who_like.all %}
+                {% if request.session.loggedInId == person.id %}
+                <em>this is one of your favorites!</em>
+                {% else %}
+                <a href="/favorite/{{book.id}}">Add to favorites!</a>
+                {% endif %}
+            {% endfor %}
+    </div>
+    {% endfor %}
+    <a href="/logout">Logout</a>
+</body>
+</html>

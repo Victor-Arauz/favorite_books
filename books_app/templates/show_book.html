@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Favorite Books</title>
+</head>
+<body>
+    <h1>Welcome, {{request.session.user}}!</h1>
+    <br>
+    {% if request.session.loggedInId == oneBook.uploaded_by.id %}
+    <form action="/book/update/{{oneBook.id}}" method="post">
+        {% csrf_token %}
+        <p>Edit Title: <input type="text" name="title" id="" value="{{oneBook.title}}"></p>
+        <p>Added by: {{oneBook.uploaded_by.first_name}} {{oneBook.uploaded_by.last_name}}</p>
+        <p>Added on: {{oneBook.created_at}}</p>
+        <p>Last updated on: {{oneBook.updated_at}}</p>
+        <p>Edit Description: </p>
+        <textarea name="desc" id="" cols="30" rows="10">{{oneBook.desc}}</textarea>
+        <br>
+        <input type="submit" value="Update">
+    </form>
+    <br>
+    <button type="submit"><a href="/book/delete/{{oneBook.id}}">Delete</a></button>
+    {% else %}
+    <h1>{{oneBook.title}}</h1>
+    <p>Added by: {{oneBook.uploaded_by.first_name}} {{oneBook.uploaded_by.last_name}}</p>
+    <p>Added on: {{oneBook.created_at}}</p>
+    <p>Last updated on: {{oneBook.updated_at}}</p>
+    <p>Description: {{oneBook.desc}}</p>
+    <br>
+    {% endif %}
+    <h1>Users Who Like This Book:</h1>
+    <ul>
+        {% for user in oneBook.users_who_like.all %}
+            {% if request.session.loggedInId == user.id %}
+        <li>{{user.first_name}} {{user.last_name}} <a href="/favorite/delete/{{oneBook.id}}">Un-Favorite</a></li>
+            {% else %}
+        <li>{{user.first_name}} {{user.last_name}} </li>
+            {% endif%}
+        {% endfor %}
+    </ul>
+        <a href="/favorite/{{oneBook.id}}">Add to favorites!</a>
+
+</body>
+</html>
